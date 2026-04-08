@@ -24,8 +24,7 @@ patch(PaymentForm.prototype, {
                 if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
                     throw new Error("Invalid URL scheme detected.");
                 }
-                const safeUrl = `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
-                window.top.location.assign(safeUrl);
+                window.top.location.assign(parsedUrl.href);
             } catch {
                 this._displayErrorDialog(_t("Payment Error"), _t("Unsafe or invalid QFPay redirect URL."));
                 this._enableButton();

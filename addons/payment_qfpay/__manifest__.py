@@ -3,7 +3,7 @@
 {
     'name': 'QFPay Payment Provider',
     'category': 'Accounting/Payment Providers',
-    'summary': 'Secure eCommerce redirect for QFPay (Alipay, WeChat, Cards)',
+    'summary': 'A payment provider covering the Hong Kong Market.',
     'description': " ",  # Non-empty string to avoid loading the README file.
     'author': 'Odoo S.A.',
     'license': 'LGPL-3',

@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from unittest.mock import patch
-from werkzeug.exceptions import Forbidden
 
 from odoo.tests import tagged
 from odoo.tools import mute_logger
@@ -17,12 +16,7 @@ class TestProcessingFlows(QFPayCommon, PaymentHttpCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.webhook_data = {
-            'out_trade_no': cls.reference,
-            'txamt': str(int(cls.amount * 100)),
-            'txcurrcd': cls.currency.name,
-            'respcd': '0000',
-        }
+        cls.webhook_data = dict(cls.webhook_data)
         cls.webhook_data['sign'] = cls.provider._qfpay_generate_sign(cls.webhook_data)
 
     @mute_logger('odoo.addons.payment_qfpay.controllers.main')
@@ -52,20 +46,18 @@ class TestProcessingFlows(QFPayCommon, PaymentHttpCommon):
     def test_accept_payment_data_with_valid_signature(self):
         """Test the verification of payment data with a valid MD5 signature."""
         tx = self._create_transaction('direct')
-        self._assert_does_not_raise(
-            Forbidden, QFPayController._verify_signature, self.webhook_data, tx
-        )
+        self.assertTrue(QFPayController._verify_signature(self.webhook_data, tx))
 
     @mute_logger('odoo.addons.payment_qfpay.controllers.main')
     def test_reject_payment_data_with_missing_signature(self):
-        """Test that a missing signature raises a Forbidden exception."""
+        """Test that a missing signature returns False."""
         tx = self._create_transaction('direct')
         bad_data = dict(self.webhook_data, sign=None)
-        self.assertRaises(Forbidden, QFPayController._verify_signature, bad_data, tx)
+        self.assertFalse(QFPayController._verify_signature(bad_data, tx))
 
     @mute_logger('odoo.addons.payment_qfpay.controllers.main')
     def test_reject_payment_data_with_invalid_signature(self):
-        """Test that an incorrect signature raises a Forbidden exception."""
+        """Test that an incorrect signature returns False."""
         tx = self._create_transaction('direct')
         bad_data = dict(self.webhook_data, sign='dummy_invalid_hash')
-        self.assertRaises(Forbidden, QFPayController._verify_signature, bad_data, tx)
+        self.assertFalse(QFPayController._verify_signature(bad_data, tx))

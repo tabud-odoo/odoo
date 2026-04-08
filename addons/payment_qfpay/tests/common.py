@@ -22,7 +22,7 @@ class QFPayCommon(PaymentCommon):
         cls.currency_hkd = cls._enable_currency('HKD')
         cls.currency = cls.currency_hkd
 
-        cls.payment_result_data = {
+        cls.webhook_data = {
             'out_trade_no': cls.reference,
             'txamt': str(int(cls.amount * 100)),  # QFPay expects cents
             'txcurrcd': cls.currency.name,
@@ -30,5 +30,3 @@ class QFPayCommon(PaymentCommon):
             'respmsg': 'Success',
             'sign': 'dummy-signature',
         }
-
-        cls.webhook_data = cls.payment_result_data

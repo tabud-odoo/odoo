@@ -33,18 +33,21 @@ class PaymentTransaction(models.Model):
             return super()._get_specific_processing_values(processing_values)
 
         base_url = self.provider_id.get_base_url()
+        # odoo_method_code = self.payment_method_id.code
+        # qfpay_method_code = const.PAYMENT_METHOD_MAPPING.get(odoo_method_code, '')
 
         payload = {
             'appcode': self.provider_id.qfpay_app_code,
             'sign_type': 'sha256',
-            'paysource': 'remotepay_checkout',
+            'paysource': 'odoo_checkout',
+            # 'pay_type': qfpay_method_code,
             'txamt': str(payment_utils.to_minor_currency_units(self.amount, self.currency_id)),
             'txcurrcd': self.currency_id.name,
             'out_trade_no': self.reference,
             'txdtm': self.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'return_url': urljoin(base_url, "/payment/qfpay/return"),
-            'failed_url': urljoin(base_url, "/payment/qfpay/return"),
-            'notify_url': urljoin(base_url, "/payment/qfpay/webhook"),
+            'return_url': urljoin(base_url, const.RETURN_URL),
+            'failed_url': urljoin(base_url, const.RETURN_URL),
+            'notify_url': urljoin(base_url, const.WEBHOOK_URL),
         }
 
         # Generate signature
@@ -60,6 +63,22 @@ class PaymentTransaction(models.Model):
         """ Update the Odoo transaction state based on the payment data. """
         if self.provider_code != 'qfpay':
             return super()._apply_updates(payment_data)
+        
+        if 'syssn' in payment_data:
+            self.provider_reference = payment_data.get('syssn')
+        elif 'qf_trade_no' in payment_data:
+            self.provider_reference = payment_data.get('qf_trade_no')
+
+        pay_type = payment_data.get('pay_type')
+        if pay_type:
+            method_code = next(
+                (code for code, p_type in const.PAYMENT_METHOD_MAPPING.items() if p_type == pay_type),
+                None
+            )
+            if method_code:
+                payment_method = self.env['payment.method'].search([('code', '=', method_code)], limit=1)
+                if payment_method:
+                    self.payment_method_id = payment_method
 
         # Status Mapping
         response_code = payment_data.get('respcd')

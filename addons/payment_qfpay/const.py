@@ -1,5 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+RETURN_URL = '/payment/qfpay/return'
+WEBHOOK_URL = '/payment/qfpay/webhook'
+
 SUPPORTED_CURRENCIES = [
     'HKD',
     'CNY',
@@ -24,6 +27,7 @@ DEFAULT_PAYMENT_METHOD_CODES = [
     'fps',
     'payme',
     'card',
+# Brand payment methods
     'visa',
     'mastercard',
 ]
@@ -35,8 +39,14 @@ PAYMENT_STATUS_MAPPING = {
     'error': ['1108', '1201', '1202', '1204', '1205', '1294', '2005'],
 }
 
-# URLs for different environments.
-API_URLS = {
-    'enabled': '',
-    'test': 'https://test-openapi-hk.qfapi.com/checkstand/#/?',
+PAYMENT_METHOD_MAPPING = {
+    'alipay': '801101',
+    'alipay_hk': '801514',
+    'wechat_pay': '800212',
+    'fps': '802001',
+    'payme': '805814',
+    'unionpay': '800714',
+    'card': '802801',
+    'visa': '802801',
+    'mastercard': '802801',
 }

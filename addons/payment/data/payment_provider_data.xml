@@ -377,6 +377,7 @@
             ref('payment.payment_method_card'),
             ref('payment.payment_method_wechat_pay'),
             ref('payment.payment_method_alipay'),
+            ref('payment.payment_method_alipay_hk'),
             ref('payment.payment_method_unionpay'),
             ref('payment.payment_method_fps'),
             ref('payment.payment_method_payme'),
