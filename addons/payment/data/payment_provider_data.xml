@@ -381,8 +381,6 @@
             ref('payment.payment_method_unionpay'),
             ref('payment.payment_method_fps'),
             ref('payment.payment_method_payme'),
-            ref('payment.payment_method_visa'),
-            ref('payment.payment_method_mastercard'),
         ])]"/>
     </record>
 
