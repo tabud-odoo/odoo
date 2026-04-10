@@ -15,7 +15,7 @@ class PaymentProvider(models.Model):
     def _qfpay_get_api_url(self):
         """ Return the redirect URL based on state. """
         if self.state == 'enabled':
-            return ''
+            return 'https://openapi-hk.qfapi.com/checkstand/#/?'
         return 'https://test-openapi-hk.qfapi.com/checkstand/#/?'
 
     def _qfpay_generate_sign(self, values):
